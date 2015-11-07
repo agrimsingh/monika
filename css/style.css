@@ -1,0 +1,41 @@
+.nl-ti-text ul li.nl-ti-input input {
+  padding-left: 10px;
+  width: 250px;
+  font-size: 1.7rem;
+}
+
+.nl-ti-text ul li.nl-ti-input input:focus {
+  border-bottom: none;
+  box-shadow: none;
+}
+
+#loading {
+  display: block;
+  margin: 0 auto;
+}
+
+td, th {
+  font-size: 1.3rem;
+}
+
+#logo {
+  width: 70%;
+  max-width: 400px;
+}
+
+.main {
+  max-width: 63em;
+}
+
+.nl-form {
+  text-align: center;
+}
+
+.nl-field ul li {
+  text-align: left;
+}
+
+#search-result a {
+    color: #fff;
+    text-decoration: underline;
+}
