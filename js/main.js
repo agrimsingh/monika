@@ -12,57 +12,10 @@ function stripTrailingSlash(str) {
     }
     return str;
 }
-// $(".nl-submit").click(function(e) {
-// 	e.preventDefault();
-// 		if ($('#textValue').prop('value') === "") {
-// 			return;
-// 		};
-// 	$('#loading').show();
-// 	$('#submit-button').hide();
-// 	$.get("http://alligator.eu-gb.mybluemix.net/query/" + $('#textValue').prop('value') + "/" +  $('#timeValue').prop('value'), function(response) {
-
-// 	 	$.each(response['results'], function(i,row){
-// 		 	var array = {
-// 		 		"summary" : row["abstract"],
-// 		 		"title" : row["title"],
-// 		 		"time" : row["time_taken"] ,
-// 		 		"url" : row["url"],
-// 		 		"exceeded" : row["exceeded"] ? true : false,
-// 		 		"score" : row["score"]
-// 		 	};
-// 		 	links.push(array);
-// 	 	});
-
-// 		$(".table-materialize").toggleClass('is-visible');
-// 		// $(".nl-form").
-// 		$(".nl-form").html('Learning about ' + $('#textValue').prop('value') + ' for ' + $('#timeValue').prop('value') + ' minutes');
-// 		$('.nl-form').animate({text: '0px'}, 1000);
-// 		var templateRow = _.template("<tr style=<%= exceeded ? 'color:#BBBBBB;' : '' %> > \
-// 				<td><a href= <%= stripTrailingSlash(url) %> style= <%= exceeded ? 'color:#BBBBBB;' : '' %>  ><b><%= title %></b></a><br /> \
-// 				<%= summary %> \
-// 				</td> \
-// 				<td><%= time %> minute<%= parseInt(time, 10) > 1 ? 's' : '' %></td> \
-// 				<td><%= score %></td> \
-// 				</tr> ");
-// 		var htmlRows = ""
-// 		var temp = ""
-
-// 		_.each(links, function (link) {
-// 			htmlRows += templateRow(link);
-// 		})
-
-// 		$('#search-result').append(htmlRows)
-// 		$('#loading').hide();
-// 	}, 'json')
-// 	.fail(function() {
-// 		Materialize.toast('Error accessing the server, please refresh the page and try again', 4000)
-// 		$('#loading').hide();
-// 		$('#submit-button').show();
-
-
-// 	})
-// ;
-// });
+function zeroPad(num, places) {
+  var zero = places - num.toString().length + 1;
+  return Array(+(zero > 0 && zero)).join("0") + num;
+}
 
 
 $(() => {
@@ -72,7 +25,7 @@ $(() => {
 	      <form id="nl-form" className="nl-form">
 	        <span className="thing">Washrooms</span>
 	        <div className="nl-submit-wrap" align="center" id="submit-button">
-	          <a className="waves-effect waves-light btn-large">Level 1</a><br /><br />
+	          <a className="waves-effect waves-light btn-large" href="/#/level1">Level 1</a><br /><br />
 	          <a className="waves-effect waves-light btn-large">Level 2</a><br /><br />
 	          <a className="waves-effect waves-light btn-large">The one we never clean</a><br /><br />
 	        </div>
@@ -92,22 +45,25 @@ $(() => {
 		  this.firebaseRef = new Firebase("https://monikadb.firebaseio.com/logs/");
 		  this.firebaseRef.on("child_added", (dataSnapshot) => {
 		  	this.setState({logs: this.state.logs.concat(dataSnapshot.val())})
-		  	console.log(this.state)
 		  })
+		  setInterval(this.forceUpdate.bind(this), 1000)
 		}
 
 		render () {
 			var tableRowNodes = []
 			var tableRows = this.state.logs[this.state.logs.length - 1]
-			console.log(tableRows)
 			if (tableRows) {
 				var keys = Object.keys(tableRows)
 				
 				for (let key of keys) {
+					var totalSeconds = Math.round(Date.now()/1000 - tableRows[key])
+					var minutes = Math.floor(totalSeconds / 60)
+					var seconds = totalSeconds % 60
+					var displayTime = zeroPad(minutes,2) +':' + zeroPad(seconds,2) + ' minutes'
 					tableRowNodes.push(
 						<tr key={key}>
 							<td>{key}</td>
-							<td>{tableRows[key]}</td>
+							<td>{displayTime}</td>
 						</tr>
 					)
 				}
@@ -129,15 +85,6 @@ $(() => {
 		}
 	}
 
-
-	// <img src="images/loading_animation.gif" id="loading" align="center" height=30% width=30% style="display:none;"></img>
-        
- //      </div>
- 	      // <Route path="about" component={About}/>
-	      // <Route path="users" component={Users}>
-	      //   <Route path="/user/:userId" component={User}/>
-	      // </Route>
-	      // <Route path="*" component={NoMatch}/>
 	ReactDOM.render((
 	  <Router>
 	    <Route path="/" component={MainButtonsComponent}></Route>
