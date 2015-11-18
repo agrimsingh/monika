@@ -25,21 +25,22 @@ if __name__ == '__main__':
 	start_time = int(time.time())
 
 	data = [
-		['Bob', start_time],
-		['Jeff', start_time]
+		['f8:ug:b6:h3:lw:n0', start_time],
+		['9x:0b:jx:cd:bt:yx', start_time]
 	]
 	upload_to_firebase(data)
-	time.sleep(60)
+	time.sleep(80)
 
 	data = [
-		['Bob', start_time]
-		#['Jeff', '2015-11-08 08:30:00']
+		['f8:ug:b6:h3:lw:n0', start_time]
 	]
 	upload_to_firebase(data)
-	time.sleep(30)
-	
-	message = client.messages.create(body="There might be a situation in toilet 1",
+	#time.sleep(10)
+
+	message = client.messages.create(
+		body="There might be a situation in toilet 1",
 	    to='+6593722542',    # Replace with your phone number
-	    from_='+14803606584') # Replace with your Twilio number
+	    from_='+14803606584' # Replace with your Twilio number
+	)
 	print message.sid
 

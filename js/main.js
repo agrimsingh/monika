@@ -38,7 +38,34 @@ $(() => {
 	class TableComponent extends React.Component {
 		constructor (props) {
 			super(props)
-			this.state = {logs: []}
+			this.state = {
+				logs: [],
+				elapsed: 0,
+				interval: null,
+				lastSlow: 0
+			}
+		}
+
+		updateElapsed () {
+			if (!this.state.logs.length) {
+				console.log('uninit')
+				return setTimeout(this.updateElapsed.bind(this), 1000)
+			}
+			var tableRows = this.state.logs[this.state.logs.length - 1]
+			var keys = Object.keys(tableRows)
+			var startTime = tableRows[keys[0]]
+			if (keys.length == 2) {
+				console.log('slow')
+				var elapsed = Math.floor(Date.now()/1000 - startTime)
+				this.setState({elapsed: elapsed, lastSlow: elapsed})
+		  	setTimeout(this.updateElapsed.bind(this), 1000)
+		  } else {
+		  	console.log('fast')
+		  	var lastSlow = Math.max(this.state.lastSlow, 80) + 1
+		  	this.setState({elapsed: lastSlow + Math.floor((Date.now()/1000 - startTime - lastSlow) * 120)})
+		  	//this.setState({elapsed: this.state.elapsed + 2})
+		  	setTimeout(this.updateElapsed.bind(this), 1000/60)
+		  }
 		}
 
 		componentWillMount () {
@@ -46,7 +73,7 @@ $(() => {
 		  this.firebaseRef.on("child_added", (dataSnapshot) => {
 		  	this.setState({logs: this.state.logs.concat(dataSnapshot.val())})
 		  })
-		  setInterval(this.forceUpdate.bind(this), 1000)
+		  this.updateElapsed.bind(this)()
 		}
 
 		render () {
@@ -54,12 +81,12 @@ $(() => {
 			var tableRows = this.state.logs[this.state.logs.length - 1]
 			if (tableRows) {
 				var keys = Object.keys(tableRows)
-				
 				for (let key of keys) {
-					var totalSeconds = Math.round(Date.now()/1000 - tableRows[key])
+					var totalSeconds = this.state.elapsed
 					var minutes = Math.floor(totalSeconds / 60)
 					var seconds = totalSeconds % 60
-					var displayTime = zeroPad(minutes,2) +':' + zeroPad(seconds,2) + ' minutes'
+					//var displayTime = zeroPad(minutes,2) +':' + zeroPad(seconds,2) + ' minutes'
+					var displayTime = zeroPad(minutes,2) +'m' + zeroPad(seconds,2) + 's'
 					tableRowNodes.push(
 						<tr key={key}>
 							<td>{key}</td>
